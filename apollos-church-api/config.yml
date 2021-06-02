@@ -1,0 +1,218 @@
+# This file, in conjuction with your .env file,
+# should be used to configure the apollos server.
+
+# Any values you wish to keep secret should be placed in `.env`
+# You can access those values (and any other values in your environment)
+# using the ${VARIABLE_NAME} syntax
+
+# This file should be checked into version control.
+# `.env` should NOT be checked into version control.
+APP:
+  # This variable is used for generating deep links.
+  # It should match whatver is in your Info.plist `CFBundleURLTypes`
+  DEEP_LINK_HOST: ${DEEP_LINK_HOST}
+  UNIVERSAL_LINK_HOST: ${UNIVERSAL_LINK_HOST}
+  ROOT_API_URL: ${ROOT_URL}
+  JOBS_USERNAME: ${JOBS_USERNAME}
+  JOBS_PASSWORD: ${JOBS_PASSWORD}
+DATABASE:
+  URL: ${DATABASE_URL}
+  OPTIONS:
+    dialectOptions:
+      ssl:
+        require: false
+        rejectUnauthorized: false
+BUGSNAG:
+  API_KEY: ${BUGSNAG_KEY}
+ROCK:
+  URL: ${ROCK_URL}
+  API_TOKEN: ${ROCK_TOKEN}
+UNIVERSAL_LINKS:
+  APPLE_APP_ID: ${APPLE_APP_ID}
+  APPLE_TEAM_ID: ${APPLE_TEAM_ID}
+  APP_STORE_LINK: ${IOS_REDIRECT}
+  PLAY_STORE_LINK: ${ANDROID_REDIRECT}
+  GOOGLE_APP_ID: ${GOOGLE_APP_ID}
+  GOOGLE_KEYSTORE_SHA256: ${GOOGLE_KEYSTORE_SHA256}
+ONE_SIGNAL:
+  APP_ID: ${ONE_SIGNAL_APP_ID}
+  REST_KEY: ${ONE_SIGNAL_REST_KEY}
+CHURCH_ONLINE:
+  URL: ${CHURCH_ONLINE_URL}
+  WEB_VIEW_URL: https://apollos.online.church/
+ALGOLIA:
+  APPLICATION_ID: ${ALGOLIASEARCH_APPLICATION_ID}
+  API_KEY: ${ALGOLIASEARCH_API_KEY}
+TWILIO:
+  ACCOUNT_SID: ${TWILIO_ACCOUNT_SID}
+  AUTH_TOKEN: ${TWILIO_AUTH_TOKEN}
+  FROM_NUMBER: ${TWILIO_FROM_NUMBER}
+PASS:
+  TEMPLATES:
+    CHECKIN: ${PWD}/wallet-passes/checkin.pass
+  CERTIFICATES:
+    WWDR: ${PASS_WWDR_CERT}
+    SIGNER_CERT: ${PASS_SIGNER_CERT}
+    SIGNER_KEY: ${PASS_SIGNER_KEY}
+    SIGNER_KEY_PASSPHRASE: ${PASS_SIGNER_PASSPHRASE}
+BIBLE_API:
+  KEY: ${BIBLE_API_KEY}
+  BIBLE_ID:
+    WEB: '9879dbb7cfe39e4d-01'
+    KJV: 'de4e12af7f28f599-02'
+CLOUDINARY:
+  URL: ${CLOUDINARY_URL}
+
+# This key holds various properties that allow our GraphQL server to map to your Rock Instance
+ROCK_MAPPINGS:
+  CONTENT_ITEM:
+    ContentSeriesContentItem:
+      # When resolving "ContentSeriesContentItem" look in rock for a "ContentChannelItem"
+      EntityType: ContentChannelItem
+      # Used to define the subset of content channels types that use this specific type.
+      ContentChannelTypeId: [6]
+    DevotionalContentItem:
+      EntityType: ContentChannelItem
+      ContentChannelId: [7]
+    MediaContentItem:
+      EntityType: ContentChannelItem
+    UniversalContentItem:
+      EntityType: ContentChannelItem
+    WeekendContentItem:
+      ContentChannelId: [5]
+      EntityType: ContentChannelItem
+    ContentItem:
+      EntityType: ContentChannelItem
+
+  DATAVIEW_CATEGORIES:
+    # Id of the category used to store all persona dataviews
+    PersonaId: 210
+
+  ALL_CONTENT_CHANNELS:
+    - 3
+    - 5
+    - 6
+    - 8
+
+  SERMON_CHANNEL_ID: 5
+
+HOME_FEATURES:
+  - type: ActionBar
+    title: Welcome to Apollos
+    actions:
+      [
+        {
+          title: Check In,
+          icon: check,
+          action: OPEN_URL,
+          relatedNode: { __typename: Url, url: 'https://www.google.com' },
+        },
+      ]
+  - algorithms:
+    - type: CONTENT_FEED
+      arguments:
+        channelIds:
+          - 6
+    type: HeroList
+    primaryAction:
+      # Right now, you hardcode exactly what GraphQL should return.
+      # Long term, we hope to have a more sophisticated mechanism for driving this field
+      action: OPEN_NODE
+      title: 'Read More'
+      relatedNode:
+        __typename: UniversalContentItem
+        id: 21
+  - algorithms: [DAILY_PRAYER]
+    isCard: false
+    type: PrayerList
+    title: Daily Prayer
+  - algorithms:
+      - type: CAMPAIGN_ITEMS
+        channelIds:
+          - 9
+    type: HeroList
+    isFeatured: true
+    subtitle: Featured
+  - title: FOR YOU
+    algorithms: [SERMON_CHILDREN, PERSONA_FEED]
+    subtitle: Explore what God calls you to today
+    type: ActionList
+  - algorithms: [PERSONA_FEED]
+    subtitle: Continue
+    type: HorizontalCardList
+  - title: RECOMMENDED
+    algorithms: [SERMON_CHILDREN]
+    subtitle: For Him
+    type: VerticalCardList
+  - title: BULLETIN
+    subtitle: What's happening at apollos?
+    type: ActionList
+    algorithms:
+      - type: CONTENT_FEED
+        arguments:
+          channelIds:
+            - 13
+      - type: UPCOMING_EVENTS
+
+DISCOVER_FEATURES:
+  - algorithms:
+      - type: CONTENT_FEED
+        arguments:
+          channelIds:
+            - 3
+          limit: 3
+    type: HorizontalCardList
+    subtitle: Sermons
+  - algorithms:
+      - type: CONTENT_FEED
+        arguments:
+          channelIds:
+            - 5
+          limit: 3
+    type: HorizontalCardList
+    subtitle: Podcasts
+    primaryAction:
+      action: OPEN_CHANNEL
+      title: 'Read More'
+      relatedNode:
+        __typename: ContentChannel
+        id: 5
+        name: Podcasts
+  - algorithms:
+      - type: CONTENT_FEED
+        arguments:
+          channelIds:
+            - 7
+          limit: 3
+    type: HorizontalCardList
+    subtitle: Devotionals
+    primaryAction:
+      action: OPEN_CHANNEL
+      title: 'Read More'
+      relatedNode:
+        __typename: ContentChannel
+        id: 7
+        name: Devotionals
+  - algorithms:
+      - type: CONTENT_FEED
+        arguments:
+          channelIds:
+            - 6
+          limit: 3
+    type: HorizontalCardList
+    title: Videos
+    primaryAction:
+      action: OPEN_CHANNEL
+      title: 'Read More'
+      relatedNode:
+        __typename: ContentChannel
+        id: 6
+        name: Videos
+  - algorithms:
+      - type: CONTENT_FEED
+        arguments:
+          channelIds:
+            - 8
+          limit: 3
+    type: HorizontalCardList
+    subtitle: Something Else
